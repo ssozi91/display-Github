@@ -1,0 +1,132 @@
+<html>
+<head>
+
+<style>
+body {
+  font-family: Arial;
+}
+
+h1 {
+  display: block;
+  color: green;
+  font-size: 18px;
+}
+
+label {
+  display: block;
+  text-decoration: uppercase;
+}
+
+button {
+  background: green;
+  color: white;
+}
+table {
+  margin-top: 16px;
+  background: #ccc;
+  border: 1px solid black;
+  font-size: 16px;
+  margin-left: 32px;
+}
+
+td {
+  border: 1px solid black;
+}
+
+th {
+  background: green;
+  border-bottom: 5px solid black;
+}
+
+.heading {
+  font-weight: bold;
+}
+
+</style>
+
+<script>
+
+function onError(err) {
+  console.log(err);
+}
+
+
+function onErrorJson(response) {
+  console.log(response);
+
+}
+
+function onSuccessJsonReady(json) {
+  drawTableFromJson(json);
+}
+
+function showUser2(response) {
+  if (response.status == 200) {
+    console.log(response.json().then(onSuccessJsonReady))
+
+  }
+  else {
+    console.log(response.statusText);
+    console.log("");
+    console.log(response.json().then(onErrorJson));
+  }
+}
+
+function getGithubInfo(username) {
+  var url = 'https://api.github.com/users/' + username;
+  fetch(url).then(showUser2).catch(onError);
+  var proofThatFetchIsAsync = document.createElement('p');
+  proofThatFetchIsAsync.innerHTML="I finished first!";
+  document.querySelector('body').appendChild(proofThatFetchIsAsync);
+
+}
+function getUsername() {
+  return document.querySelector('#username-button').value;
+}
+
+function onButtonClicked() {
+  var username = getUsername();
+  var gethubInfo = getGithubInfo(username);
+  //showUser(gethubInfo);
+}
+
+function drawTableFromJson(
+) {
+  var table = `<table><thead><tr><th>Name</th><th>Value</th></tr></thead>`
+  table = table + '<tbody>';
+  for (key in json) {
+      var value = json[key];
+      table = table + `<tr><td class="heading">${key}</td><td>${value}</td></tr>`;
+  }
+  table = table + '</tbody></table>';
+  var newDiv = document.createElement('div');
+  newDiv.innerHTML = table;
+  document.querySelector('body').appendChild(newDiv);
+}
+
+function showUser(xmlhttp) {
+  if(xmlhttp.status === 200) {
+    console.log(xmlhttp.responseText)
+    var json = JSON.parse(xmlhttp.responseText);
+  drawTableFromJson(json);
+
+  } else {
+    console.log(xmlhttp.statusText);
+    console.log("");
+    console.log(xmlhttp.responseText);
+
+  }
+}
+function bodyLoaded() {
+  document.querySelector('#fetch-user-details').addEventListener('click', onButtonClicked);
+}
+</script>
+</head>
+
+<body onload="bodyLoaded()">
+  <h1>Raymond's amazing API test app</h1>
+  <label for="username-button">Enter a github username:</label>
+  <input id="username-button"></input>
+  <button id="fetch-user-details">Fetch user details</button>
+</body>
+</html>
